@@ -1,0 +1,50 @@
+(
+    {
+        author = "Austen, Jane";
+        imageFilePath = "Austen.jpg";
+        title = "Pride and Prejudice";
+        year = 1813;
+    },
+    {
+        author = "Thoreau, Henry David";
+        imageFilePath = "Thoreau.jpg";
+        title = Walden;
+        year = 1854;
+    },
+    {
+        author = "Emerson, Ralph Waldo";
+        imageFilePath = "Emerson.jpg";
+        title = "The Conduct of Life";
+        year = 1860;
+    },
+    {
+        author = "Eliot, George";
+        imageFilePath = "Eliot.jpg";
+        title = Middlemarch;
+        year = 1874;
+    },
+    {
+        author = "Tolstoy, Leo";
+        imageFilePath = "Tolstoy.jpg";
+        title = "War and Peace";
+        year = 1869;
+    },
+    {
+        author = "Austen, Jane";
+        imageFilePath = "Austen.jpg";
+        title = "Mansfield Park";
+        year = 1814;
+    },
+    {
+        author = "Bacon, Francis";
+        imageFilePath = "Bacon.jpg";
+        title = "The New Atlantis";
+        year = 1627;
+    },
+    {
+        author = "Hemingway, Ernest";
+        imageFilePath = "Hemingway.jpg";
+        title = "The Old Man and the Sea";
+        year = 1952;
+    }
+)
