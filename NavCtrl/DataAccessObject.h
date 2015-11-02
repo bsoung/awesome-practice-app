@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "Parent.h"
 
+//also known as a "factory class"
+
 @interface DataAccessObject : NSObject
 
 @property (nonatomic, retain, readonly) NSMutableArray *companyList;
@@ -20,9 +22,11 @@
 
 
 
+
+
 + (instancetype)sharedInstance;
 
-- (void)addCompanyWithName:(NSString *)name andLogo:(NSString *)logo;
+- (void)addCompanyWithName:(NSString *)name andLogo:(NSString *)logo andSymbol:(NSString *)symbol;
 - (void)addProductToCompany:(Parent *)company withName:(NSString *)name andLogo:(NSString *)logo andUrl:(NSString *)url;
 
 @end

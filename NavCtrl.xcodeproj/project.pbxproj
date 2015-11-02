@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2622D22A1BE7CBBA00F9750E /* questionmark.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 2622D2291BE7CBBA00F9750E /* questionmark.jpeg */; settings = {ASSET_TAGS = (); }; };
 		48A656B518163BF200746D36 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48A656B418163BF200746D36 /* Foundation.framework */; };
 		48A656B718163BF200746D36 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48A656B618163BF200746D36 /* CoreGraphics.framework */; };
 		48A656B918163BF200746D36 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48A656B818163BF200746D36 /* UIKit.framework */; };
@@ -62,6 +63,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2622D2291BE7CBBA00F9750E /* questionmark.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = questionmark.jpeg; sourceTree = "<group>"; };
 		48A656B118163BF200746D36 /* NavCtrl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NavCtrl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		48A656B418163BF200746D36 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		48A656B618163BF200746D36 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -242,6 +244,7 @@
 				AA8B58101BE003BD0033648D /* nexus9logo.jpg */,
 				AA8B58111BE003BD0033648D /* nokia1520logo.jpeg */,
 				AA8B58121BE003BD0033648D /* nokialogo.jpeg */,
+				2622D2291BE7CBBA00F9750E /* questionmark.jpeg */,
 				AA8B58131BE003BD0033648D /* samsunglogo.jpeg */,
 				48A656BC18163BF200746D36 /* NavCtrl-Info.plist */,
 				48A656BD18163BF200746D36 /* InfoPlist.strings */,
@@ -392,6 +395,7 @@
 				AA8B58141BE003BD0033648D /* applelogo.jpeg in Resources */,
 				AA8B581E1BE003BD0033648D /* nexus6logo.jpeg in Resources */,
 				AA8B58211BE003BD0033648D /* nokia1520logo.jpeg in Resources */,
+				2622D22A1BE7CBBA00F9750E /* questionmark.jpeg in Resources */,
 				AA8B58171BE003BD0033648D /* galaxytablogo.jpeg in Resources */,
 				C9C202DF1BE3A79B0014B5C5 /* AddProductViewController.xib in Resources */,
 				48A656E718163C1B00746D36 /* CompanyViewController.xib in Resources */,

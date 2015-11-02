@@ -12,6 +12,7 @@
 
 @property (nonatomic, retain) IBOutlet UITextField *companyTextField;
 @property (nonatomic, retain) IBOutlet UITextField *logoTextField;
+@property (nonatomic, retain) IBOutlet UITextField *symbolTextField;
 @property (nonatomic, retain) IBOutlet UIButton *addCompanyText;
 @property (nonatomic, retain) IBOutlet UIButton *cancelCompanyText;
 

@@ -69,20 +69,20 @@
                              [[Product alloc] initWithName:@"Nokia 1520" andUrl:@"https://www.microsoft.com/en-us/mobile/phone/lumia1520/" andLogo:@"nokia1520logo.jpeg"], nil];
         
         self.companyList = [NSMutableArray arrayWithObjects:
-                            [[Parent alloc] initWithName:@"Apple" andLogo:@"applelogo.jpeg" andProduct:self.appleProduct],
-                            [[Parent alloc] initWithName:@"Samsung" andLogo:@"samsunglogo.jpeg" andProduct:self.samsungProduct],
-                            [[Parent alloc] initWithName:@"Google" andLogo:@"googlelogo.jpeg" andProduct:self.googleProduct],
-                            [[Parent alloc] initWithName:@"Nokia" andLogo:@"nokialogo.jpeg" andProduct:self.nokiaProduct], nil];
+                            [[Parent alloc] initWithName:@"Apple" andLogo:@"applelogo.jpeg" andProduct:self.appleProduct andSymbol:@"AAPL"],
+                            [[Parent alloc] initWithName:@"Samsung" andLogo:@"samsunglogo.jpeg" andProduct:self.samsungProduct andSymbol:@"BBRY"],
+                            [[Parent alloc] initWithName:@"Google" andLogo:@"googlelogo.jpeg" andProduct:self.googleProduct andSymbol:@"GOOG"],
+                            [[Parent alloc] initWithName:@"Nokia" andLogo:@"nokialogo.jpeg" andProduct:self.nokiaProduct andSymbol:@"MSFT"], nil];
     }
     return self;
 
 
 }
 
-- (void)addCompanyWithName:(NSString *)name andLogo:(NSString *)logo
+- (void)addCompanyWithName:(NSString *)name andLogo:(NSString *)logo andSymbol:(NSString *)symbol
 {
-    logo = @"ipadlogo.jpeg";
-    Parent *company = [[Parent alloc] initWithName:name andLogo:logo andProduct:[NSMutableArray array]];
+    logo = @"questionmark.jpeg";
+    Parent *company = [[Parent alloc] initWithName:name andLogo:logo andProduct:[NSMutableArray array] andSymbol:symbol];
     
     [self.companyList addObject:company];
 
@@ -91,7 +91,7 @@
 
 - (void)addProductToCompany:(Parent *)company withName:(NSString *)name andLogo:(NSString *)logo andUrl:(NSString *)url
 {
-    logo = @"ipadlogo.jpeg";
+    logo = @"questionmark.jpeg";
     Product *product = [[Product alloc] initWithName:name andUrl:url andLogo:logo];
     
     [company.products addObject:product];

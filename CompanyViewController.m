@@ -42,6 +42,12 @@
     
      self.navigationItem.leftBarButtonItem = nil;
     
+   
+    
+    
+   
+    
+    
 }
 
 - (void) setEditing:(BOOL)editing animated:(BOOL)animated
@@ -119,6 +125,25 @@
     cell.textLabel.text = parent.name;
     cell.imageView.image = [UIImage imageNamed:parent.logo];
     
+    //create property symbol in factory class
+    //include the property in the initializer
+    //this symbol will display the information
+    
+    NSString *stockSymbol = parent.symbol;
+    NSURL *apiURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://dev.markitondemand.com/Api/v2/Quote/json?symbol=%@", stockSymbol]];
+    
+    NSData *apiJSONData = [NSData dataWithContentsOfURL:apiURL];
+    
+    NSDictionary *stockData = [NSJSONSerialization JSONObjectWithData:apiJSONData options:NSJSONReadingMutableContainers error:nil];
+    
+    self.nameLabel = [NSString stringWithFormat:@" | Current Stock Price %@", [stockData objectForKey:@"LastPrice"]];
+    
+    //self.priceLabel = [NSString stringWithFormat:@"Price: %@", [stockData objectForKey:@"LastPrice"]];
+    
+    
+    NSString *cellText = [parent.name stringByAppendingString:self.nameLabel];
+    
+    [[cell textLabel] setText:cellText];
     
   
     return cell;
@@ -157,6 +182,8 @@
  
     return YES;
 }
+
+
  
 
 

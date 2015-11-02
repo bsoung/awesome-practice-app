@@ -10,11 +10,12 @@
 
 @implementation Parent
 
--(instancetype)initWithName:(NSString *)name andLogo:(NSString *)logo andProduct:(NSMutableArray *)product
+-(instancetype)initWithName:(NSString *)name andLogo:(NSString *)logo andProduct:(NSMutableArray *)product andSymbol:(NSString *)symbol
 {
     self.name = name;
     self.logo = logo;
     self.products = product;
+    self.symbol = symbol;
     
     return self;
 }
@@ -25,6 +26,7 @@
     [self.name release];
     [self.logo release];
     [self.products release];
+    [self.symbol release];
 }
 
 
