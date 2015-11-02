@@ -15,6 +15,18 @@
 
 @implementation AddProductViewController
 
+- (void)dealloc
+{
+    [super dealloc];
+    [self.addProductLogo release];
+    [self.addProductName release];
+    [self.addProductURL release];
+    [self.productButton release];
+    [self.cancelButton release];
+    [self.company release];
+    
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.

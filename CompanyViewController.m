@@ -40,12 +40,20 @@
     
      self.title = @"Mobile device makers";
     
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addCompany: )];
-    [self.navigationItem setLeftBarButtonItem:addButton];
+     self.navigationItem.leftBarButtonItem = nil;
     
-  
+}
+
+- (void) setEditing:(BOOL)editing animated:(BOOL)animated
+{
+    [super setEditing:editing animated:animated];
     
-    
+    if (editing) {
+        UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addCompany: )];
+        [self.navigationItem setLeftBarButtonItem:addButton];
+    } else {
+        self.navigationItem.leftBarButtonItem = nil;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -76,6 +84,7 @@
 - (void)dealloc
 {
     [super dealloc];
+    [self.productViewController release];
 
 }
 

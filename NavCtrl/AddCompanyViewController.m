@@ -15,6 +15,16 @@
 
 @implementation AddCompanyViewController
 
+- (void)dealloc
+{
+    [super dealloc];
+    [self.companyTextField release];
+    [self.logoTextField release];
+    [self.addCompanyText release];
+    [self.cancelCompanyText release];
+    
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
