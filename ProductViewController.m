@@ -37,11 +37,9 @@
 {
     [super viewDidLoad];
  
-     self.clearsSelectionOnViewWillAppear = NO;
- 
-     self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
-     self.navigationItem.leftBarButtonItem = nil;
+    self.clearsSelectionOnViewWillAppear = NO;
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.navigationItem.leftBarButtonItem = nil;
  
 }
 
@@ -51,12 +49,10 @@
     
     if (editing) {
         UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addProduct: )];
-        [self.navigationItem setLeftBarButtonItem:addButton];
+        [self.navigationItem setLeftBarButtonItem:addButton]; 
     } else {
         self.navigationItem.leftBarButtonItem = nil;
     }
-
-
 }
 
 
@@ -64,14 +60,12 @@
 {
     
     [super viewWillAppear:animated];
-    
     [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-   
 }
 
 #pragma mark - Table view data source
@@ -113,8 +107,7 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete)
-    {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
  
         [self.company.products removeObjectAtIndex:indexPath.row];
         [tableView reloadData];

@@ -14,6 +14,6 @@
 @property (nonatomic, retain, readonly) NSString *url;
 @property (nonatomic, retain, readonly) NSString *logo;
 
--(instancetype)initWithName:(NSString *)name andUrl:(NSString *)url andLogo:(NSString *)logo;
+-(instancetype)initWithName:(NSString *)name andUrl:(NSString *)url andLogo:(NSString *)logo; 
 
 @end
