@@ -12,8 +12,8 @@
 
 @interface CompanyViewController : UITableViewController
 @property (nonatomic, retain) IBOutlet  ProductViewController * productViewController;
-@property (nonatomic, retain) NSString *nameLabel;
-@property (nonatomic, retain) NSString *priceLabel;
+@property (nonatomic, retain, readonly) NSString *nameLabel;
+@property (nonatomic, retain, readonly) NSString *priceLabel;
 
 - (void)addCompany:(id)sender;
 

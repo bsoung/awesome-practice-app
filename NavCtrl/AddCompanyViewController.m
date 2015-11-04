@@ -42,16 +42,13 @@
     NSString *symbolName = self.symbolTextField.text;
     
     
-    if (companyName.length > 0)
-    {
+    if (companyName.length > 0) {
         [[DataAccessObject sharedInstance] addCompanyWithName:companyName andLogo:logoName andSymbol:symbolName];
         [self.navigationController popViewControllerAnimated:YES];
     } else {
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Cannot add company with no name!" delegate:nil cancelButtonTitle:@"Okay" otherButtonTitles: nil];
         [alert show];
     }
-
-
 
 }
 

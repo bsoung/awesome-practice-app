@@ -8,6 +8,15 @@
 
 #import "Parent.h"
 
+@interface Parent ()
+
+@property (nonatomic, retain, readwrite) NSString *name;
+@property (nonatomic, retain, readwrite) NSString *logo;
+@property (nonatomic, retain, readwrite) NSString *symbol;
+@property (nonatomic, retain, readwrite) NSMutableArray *products;
+
+@end
+
 @implementation Parent
 
 -(instancetype)initWithName:(NSString *)name andLogo:(NSString *)logo andProduct:(NSMutableArray *)product andSymbol:(NSString *)symbol

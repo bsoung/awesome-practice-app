@@ -44,7 +44,6 @@
 		AA8B58231BE003BD0033648D /* samsunglogo.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = AA8B58131BE003BD0033648D /* samsunglogo.jpeg */; };
 		AA8B58271BE034C50033648D /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA8B58251BE034C50033648D /* WebViewController.m */; };
 		AA8B58281BE034C50033648D /* WebViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA8B58261BE034C50033648D /* WebViewController.xib */; };
-		AAA977841BE2ACE0009A9DDA /* EditableDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA977831BE2ACE0009A9DDA /* EditableDetailCell.m */; };
 		C9641F531BE24925002A3FF4 /* DataAccessObject.m in Sources */ = {isa = PBXBuildFile; fileRef = C9641F521BE24925002A3FF4 /* DataAccessObject.m */; };
 		C9C202D71BE39F4D0014B5C5 /* AddCompanyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9C202D51BE39F4D0014B5C5 /* AddCompanyViewController.m */; settings = {ASSET_TAGS = (); }; };
 		C9C202D81BE39F4D0014B5C5 /* AddCompanyViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C9C202D61BE39F4D0014B5C5 /* AddCompanyViewController.xib */; settings = {ASSET_TAGS = (); }; };
@@ -109,8 +108,6 @@
 		AA8B58241BE034C50033648D /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebViewController.h; path = ../WebViewController.h; sourceTree = "<group>"; };
 		AA8B58251BE034C50033648D /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebViewController.m; path = ../WebViewController.m; sourceTree = "<group>"; };
 		AA8B58261BE034C50033648D /* WebViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = WebViewController.xib; path = ../WebViewController.xib; sourceTree = "<group>"; };
-		AAA977821BE2ACE0009A9DDA /* EditableDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableDetailCell.h; sourceTree = "<group>"; };
-		AAA977831BE2ACE0009A9DDA /* EditableDetailCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditableDetailCell.m; sourceTree = "<group>"; };
 		C9641F511BE24925002A3FF4 /* DataAccessObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataAccessObject.h; sourceTree = "<group>"; };
 		C9641F521BE24925002A3FF4 /* DataAccessObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataAccessObject.m; sourceTree = "<group>"; };
 		C9C202D41BE39F4D0014B5C5 /* AddCompanyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddCompanyViewController.h; sourceTree = "<group>"; };
@@ -161,8 +158,6 @@
 				48A656E418163C1B00746D36 /* CompanyViewController.m */,
 				AA8B57FE1BDFD63A0033648D /* Parent.h */,
 				AA8B57FF1BDFD63A0033648D /* Parent.m */,
-				AAA977821BE2ACE0009A9DDA /* EditableDetailCell.h */,
-				AAA977831BE2ACE0009A9DDA /* EditableDetailCell.m */,
 			);
 			name = ParentViewController;
 			sourceTree = "<group>";
@@ -431,7 +426,6 @@
 			files = (
 				C9641F531BE24925002A3FF4 /* DataAccessObject.m in Sources */,
 				48A656E618163C1B00746D36 /* CompanyViewController.m in Sources */,
-				AAA977841BE2ACE0009A9DDA /* EditableDetailCell.m in Sources */,
 				48A656C518163BF200746D36 /* NavControllerAppDelegate.m in Sources */,
 				48A656C118163BF200746D36 /* main.m in Sources */,
 				AA8B58031BDFD64E0033648D /* Product.m in Sources */,

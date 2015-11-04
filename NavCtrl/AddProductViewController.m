@@ -50,22 +50,13 @@
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Name, logo, and URL must not be blank!" delegate:nil cancelButtonTitle:@"Okay" otherButtonTitles: nil];
         [alert show];
     }
-
-
-
 }
 
 - (IBAction)pressCancelButton:(id)sender
 {
-    [self.navigationController popViewControllerAnimated:YES];}
-/*
-#pragma mark - Navigation
+    [self.navigationController popViewControllerAnimated:YES];
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
 }
-*/
+
 
 @end

@@ -10,9 +10,9 @@
 
 @interface Product : NSObject
 
-@property (nonatomic, retain) NSString *name;
-@property (nonatomic, retain) NSString *url;
-@property (nonatomic, retain) NSString *logo;
+@property (nonatomic, retain, readonly) NSString *name;
+@property (nonatomic, retain, readonly) NSString *url;
+@property (nonatomic, retain, readonly) NSString *logo;
 
 -(instancetype)initWithName:(NSString *)name andUrl:(NSString *)url andLogo:(NSString *)logo;
 

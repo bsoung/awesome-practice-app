@@ -8,6 +8,14 @@
 
 #import "Product.h"
 
+@interface Product ()
+
+@property (nonatomic, retain, readwrite) NSString *name;
+@property (nonatomic, retain, readwrite) NSString *url;
+@property (nonatomic, retain, readwrite) NSString *logo;
+
+@end
+
 @implementation Product
 
 -(instancetype)initWithName:(NSString *)name andUrl:(NSString *)url andLogo:(NSString *)logo

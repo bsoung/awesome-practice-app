@@ -15,6 +15,9 @@
  
 @interface CompanyViewController ()
 
+@property (nonatomic, retain, readwrite) NSString *nameLabel;
+@property (nonatomic, retain, readwrite) NSString *priceLabel;
+
 @end
 
 
@@ -25,8 +28,7 @@
 {
     self = [super initWithStyle:style];
     
-    if (self)
-    {}
+    if (self) { }
     return self;
 }
 
@@ -34,19 +36,10 @@
 {
     [super viewDidLoad];
  
-     self.clearsSelectionOnViewWillAppear = NO;
- 
-     self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
-     self.title = @"Mobile device makers";
-    
-     self.navigationItem.leftBarButtonItem = nil;
-    
-   
-    
-    
-   
-    
+    self.clearsSelectionOnViewWillAppear = NO;
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.title = @"Mobile device makers";
+    self.navigationItem.leftBarButtonItem = nil;
     
 }
 
@@ -65,14 +58,13 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
     [self.tableView reloadData];
 
 }
 
 - (void)addCompany:(id)sender
 {
-    NSLog(@"Adding company...");
+    
     AddCompanyViewController *addVC = [[AddCompanyViewController alloc] init];
     [self.navigationController pushViewController:addVC animated:YES];
 
@@ -114,8 +106,7 @@
 {
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil)
-    {
+    if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
@@ -159,8 +150,7 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete)
-    {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
 
         [[DataAccessObject sharedInstance].companyList removeObjectAtIndex:indexPath.row];
         [tableView reloadData];

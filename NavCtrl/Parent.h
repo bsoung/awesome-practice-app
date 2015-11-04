@@ -11,11 +11,10 @@
 @interface Parent : NSObject
 
 
-@property (nonatomic, retain) NSString *name;
-@property (nonatomic, retain) NSString *logo;
-@property (nonatomic, retain) NSString *symbol;
-
-@property (nonatomic, retain) NSMutableArray *products;
+@property (nonatomic, retain, readonly) NSString *name;
+@property (nonatomic, retain, readonly) NSString *logo;
+@property (nonatomic, retain, readonly) NSString *symbol;
+@property (nonatomic, retain, readonly) NSMutableArray *products;
 
 - (instancetype)initWithName:(NSString *)name andLogo:(NSString *)logo andProduct:(NSMutableArray *)product andSymbol:(NSString *)symbol;
 
