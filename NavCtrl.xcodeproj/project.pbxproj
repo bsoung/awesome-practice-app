@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2622D22A1BE7CBBA00F9750E /* questionmark.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 2622D2291BE7CBBA00F9750E /* questionmark.jpeg */; settings = {ASSET_TAGS = (); }; };
+		2622D2721BEAAAAE00F9750E /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2622D2701BEAA90B00F9750E /* libsqlite3.tbd */; };
+		2622D27C1BEBE9F600F9750E /* Company.sql in Resources */ = {isa = PBXBuildFile; fileRef = 2622D27A1BEBDEC000F9750E /* Company.sql */; };
 		48A656B518163BF200746D36 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48A656B418163BF200746D36 /* Foundation.framework */; };
 		48A656B718163BF200746D36 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48A656B618163BF200746D36 /* CoreGraphics.framework */; };
 		48A656B918163BF200746D36 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48A656B818163BF200746D36 /* UIKit.framework */; };
@@ -63,6 +65,8 @@
 
 /* Begin PBXFileReference section */
 		2622D2291BE7CBBA00F9750E /* questionmark.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = questionmark.jpeg; sourceTree = "<group>"; };
+		2622D2701BEAA90B00F9750E /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		2622D27A1BEBDEC000F9750E /* Company.sql */ = {isa = PBXFileReference; lastKnownFileType = file; name = Company.sql; path = ../../Company.sql; sourceTree = "<group>"; };
 		48A656B118163BF200746D36 /* NavCtrl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NavCtrl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		48A656B418163BF200746D36 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		48A656B618163BF200746D36 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -123,6 +127,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2622D2721BEAAAAE00F9750E /* libsqlite3.tbd in Frameworks */,
 				48A656B718163BF200746D36 /* CoreGraphics.framework in Frameworks */,
 				48A656B918163BF200746D36 /* UIKit.framework in Frameworks */,
 				48A656B518163BF200746D36 /* Foundation.framework in Frameworks */,
@@ -142,6 +147,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2622D2731BEABB4500F9750E /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				48A656ED1816468000746D36 /* Sunflower.gif */,
+				AA8B58041BE003BD0033648D /* applelogo.jpeg */,
+				AA8B58071BE003BD0033648D /* galaxytablogo.jpeg */,
+				AA8B58081BE003BD0033648D /* googlelogo.jpeg */,
+				AA8B58091BE003BD0033648D /* ipadlogo.jpeg */,
+				AA8B580A1BE003BD0033648D /* iphonelogo.jpeg */,
+				AA8B580B1BE003BD0033648D /* itouchlogo.jpeg */,
+				AA8B580C1BE003BD0033648D /* lumia640logo.jpeg */,
+				AA8B580D1BE003BD0033648D /* lumia640xllogo.jpeg */,
+				AA8B580E1BE003BD0033648D /* nexus6logo.jpeg */,
+				AA8B580F1BE003BD0033648D /* nexus7logo.jpeg */,
+				AA8B58101BE003BD0033648D /* nexus9logo.jpg */,
+				AA8B58111BE003BD0033648D /* nokia1520logo.jpeg */,
+				AA8B58121BE003BD0033648D /* nokialogo.jpeg */,
+				2622D2291BE7CBBA00F9750E /* questionmark.jpeg */,
+				AA8B58131BE003BD0033648D /* samsunglogo.jpeg */,
+				AA8B58051BE003BD0033648D /* galaxynotelogo.jpeg */,
+				AA8B58061BE003BD0033648D /* galaxys4logo.jpeg */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
 		483796CB1BCBF7A00062D5AB /* AppDelegate */ = {
 			isa = PBXGroup;
 			children = (
@@ -195,6 +225,8 @@
 		48A656B318163BF200746D36 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2622D27A1BEBDEC000F9750E /* Company.sql */,
+				2622D2701BEAA90B00F9750E /* libsqlite3.tbd */,
 				48A656B418163BF200746D36 /* Foundation.framework */,
 				48A656B618163BF200746D36 /* CoreGraphics.framework */,
 				48A656B818163BF200746D36 /* UIKit.framework */,
@@ -223,24 +255,7 @@
 		48A656BB18163BF200746D36 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				48A656ED1816468000746D36 /* Sunflower.gif */,
-				AA8B58041BE003BD0033648D /* applelogo.jpeg */,
-				AA8B58051BE003BD0033648D /* galaxynotelogo.jpeg */,
-				AA8B58061BE003BD0033648D /* galaxys4logo.jpeg */,
-				AA8B58071BE003BD0033648D /* galaxytablogo.jpeg */,
-				AA8B58081BE003BD0033648D /* googlelogo.jpeg */,
-				AA8B58091BE003BD0033648D /* ipadlogo.jpeg */,
-				AA8B580A1BE003BD0033648D /* iphonelogo.jpeg */,
-				AA8B580B1BE003BD0033648D /* itouchlogo.jpeg */,
-				AA8B580C1BE003BD0033648D /* lumia640logo.jpeg */,
-				AA8B580D1BE003BD0033648D /* lumia640xllogo.jpeg */,
-				AA8B580E1BE003BD0033648D /* nexus6logo.jpeg */,
-				AA8B580F1BE003BD0033648D /* nexus7logo.jpeg */,
-				AA8B58101BE003BD0033648D /* nexus9logo.jpg */,
-				AA8B58111BE003BD0033648D /* nokia1520logo.jpeg */,
-				AA8B58121BE003BD0033648D /* nokialogo.jpeg */,
-				2622D2291BE7CBBA00F9750E /* questionmark.jpeg */,
-				AA8B58131BE003BD0033648D /* samsunglogo.jpeg */,
+				2622D2731BEABB4500F9750E /* Images */,
 				48A656BC18163BF200746D36 /* NavCtrl-Info.plist */,
 				48A656BD18163BF200746D36 /* InfoPlist.strings */,
 				48A656C018163BF200746D36 /* main.m */,
@@ -382,6 +397,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2622D27C1BEBE9F600F9750E /* Company.sql in Resources */,
 				AA8B581B1BE003BD0033648D /* itouchlogo.jpeg in Resources */,
 				AA8B58151BE003BD0033648D /* galaxynotelogo.jpeg in Resources */,
 				48A656EE1816468000746D36 /* Sunflower.gif in Resources */,

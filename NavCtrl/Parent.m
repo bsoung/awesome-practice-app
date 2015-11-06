@@ -14,17 +14,19 @@
 @property (nonatomic, retain, readwrite) NSString *logo;
 @property (nonatomic, retain, readwrite) NSString *symbol;
 @property (nonatomic, retain, readwrite) NSMutableArray *products;
+@property (nonatomic, assign, readwrite) NSInteger company_ID;
 
 @end
 
 @implementation Parent
 
--(instancetype)initWithName:(NSString *)name andLogo:(NSString *)logo andProduct:(NSMutableArray *)product andSymbol:(NSString *)symbol
+-(instancetype)initWithName:(NSString *)name andLogo:(NSString *)logo andProduct:(NSMutableArray *)product andSymbol:(NSString *)symbol andID:(NSInteger)company_id
 {
     self.name = name;
     self.logo = logo;
     self.products = product;
     self.symbol = symbol;
+    self.company_ID = company_id;
     
     return self;
 }

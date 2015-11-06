@@ -13,16 +13,20 @@
 @property (nonatomic, retain, readwrite) NSString *name;
 @property (nonatomic, retain, readwrite) NSString *url;
 @property (nonatomic, retain, readwrite) NSString *logo;
+@property (nonatomic, assign, readwrite) NSInteger company_ID;
+@property (nonatomic, assign, readwrite) NSInteger product_ID;
 
 @end
 
 @implementation Product
 
--(instancetype)initWithName:(NSString *)name andUrl:(NSString *)url andLogo:(NSString *)logo
+-(instancetype)initWithName:(NSString *)name andUrl:(NSString *)url andLogo:(NSString *)logo andCompanyID:(NSInteger)company_ID andProductID:(NSInteger)product_ID
 {
     self.name = name;
     self.url = url;
     self.logo = logo;
+    self.company_ID = company_ID;
+    self.product_ID = product_ID;
     
     return self;
 
@@ -35,6 +39,7 @@
     [self.name release];
     [self.url release];
     [self.logo release];
+
 }
 
 @end

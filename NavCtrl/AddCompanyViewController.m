@@ -43,7 +43,18 @@
     
     
     if (companyName.length > 0) {
-        [[DataAccessObject sharedInstance] addCompanyWithName:companyName andLogo:logoName andSymbol:symbolName];
+        Parent *lastCompany =  [[DataAccessObject sharedInstance].companyList lastObject];
+        [[DataAccessObject sharedInstance]
+         addCompanyWithName:companyName
+         andLogo:logoName
+         andSymbol:symbolName
+         andID:lastCompany.company_ID+1
+         andWriteToDataBase:YES];
+        
+        //+ andWritetodatabase bool, when adding companies already in the database, say no. otherwise, not yet in the database yes. bool yes here
+        //loadcompanyfromdatabase method, bool no.
+        //check if yes or no. if yes, call the write to database. else, no. call it from inside the addcompanywithname method
+        
         [self.navigationController popViewControllerAnimated:YES];
     } else {
         UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Error" message:@"Cannot add company with no name!" delegate:nil cancelButtonTitle:@"Okay" otherButtonTitles: nil];

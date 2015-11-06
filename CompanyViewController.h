@@ -7,13 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DataAccessObject.h"
+#import "ProductViewController.h"
 
-@class ProductViewController;
 
 @interface CompanyViewController : UITableViewController
 @property (nonatomic, retain) IBOutlet  ProductViewController * productViewController;
 @property (nonatomic, retain, readonly) NSString *nameLabel;
 @property (nonatomic, retain, readonly) NSString *priceLabel;
+
 
 - (void)addCompany:(id)sender;
 

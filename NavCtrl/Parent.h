@@ -15,8 +15,9 @@
 @property (nonatomic, retain, readonly) NSString *logo;
 @property (nonatomic, retain, readonly) NSString *symbol;
 @property (nonatomic, retain, readonly) NSMutableArray *products;
+@property (nonatomic, assign, readonly) NSInteger company_ID;
 
-- (instancetype)initWithName:(NSString *)name andLogo:(NSString *)logo andProduct:(NSMutableArray *)product andSymbol:(NSString *)symbol;
+- (instancetype)initWithName:(NSString *)name andLogo:(NSString *)logo andProduct:(NSMutableArray *)product andSymbol:(NSString *)symbol andID:(NSInteger)company_id;
 
 
 

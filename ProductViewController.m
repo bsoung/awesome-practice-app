@@ -61,6 +61,7 @@
     
     [super viewWillAppear:animated];
     [self.tableView reloadData];
+ 
 }
 
 - (void)didReceiveMemoryWarning

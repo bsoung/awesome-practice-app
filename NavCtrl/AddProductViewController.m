@@ -44,12 +44,16 @@
     NSString *productURL = self.addProductURL.text;
     
     if (productName.length > 0 && productLogo.length > 0 && productURL.length > 0) {
-        [[DataAccessObject sharedInstance] addProductToCompany:self.company withName:productName andLogo:productLogo andUrl:productURL];
+        [[DataAccessObject sharedInstance] addProductWithName:productName andLogo:productLogo andUrl:productURL toCompanyWithID:self.company.company_ID andWriteToDataBase:YES andProductID:self.product.product_ID];
         [self.navigationController popViewControllerAnimated:YES];
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Name, logo, and URL must not be blank!" delegate:nil cancelButtonTitle:@"Okay" otherButtonTitles: nil];
         [alert show];
     }
+    
+    //+ andWritetodatabase bool, when adding companies already in the database, say no. otherwise, not yet in the database yes. bool yes here
+    //loadcompanyfromdatabase method, bool no.
+    //check if yes or no. if yes, call the write to database. else, no. call it from inside the addcompanywithname method
 }
 
 - (IBAction)pressCancelButton:(id)sender

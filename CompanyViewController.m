@@ -17,6 +17,7 @@
 
 @property (nonatomic, retain, readwrite) NSString *nameLabel;
 @property (nonatomic, retain, readwrite) NSString *priceLabel;
+@property (nonatomic, retain, readwrite) DataAccessObject *model;
 
 @end
 
@@ -32,6 +33,7 @@
     return self;
 }
 
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -40,6 +42,9 @@
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
     self.title = @"Mobile device makers";
     self.navigationItem.leftBarButtonItem = nil;
+    
+    
+    [[DataAccessObject sharedInstance] checkAndCreateDatabase];
     
 }
 

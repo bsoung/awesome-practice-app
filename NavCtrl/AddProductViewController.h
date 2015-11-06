@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Parent.h"
+#import "Product.h"
 
 @interface AddProductViewController : UIViewController
 
@@ -17,6 +18,7 @@
 @property (nonatomic, retain) IBOutlet UIButton *productButton;
 @property (nonatomic, retain) IBOutlet UIButton *cancelButton;
 @property (nonatomic, retain) Parent *company;
+@property (nonatomic, retain) Product *product;
 
 
 - (IBAction)pressAddButton:(id)sender;
