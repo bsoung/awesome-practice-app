@@ -19,4 +19,15 @@
 @dynamic index;
 @dynamic products;
 
+-(void)dealloc
+{
+    [self.company_logo release];
+    [self.company_name release];
+    [self.company_symbol release];
+    [self.products release];
+    [self.index release];
+    [super dealloc];
+
+}
+
 @end

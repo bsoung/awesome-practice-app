@@ -7,40 +7,40 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <sqlite3.h>
-#import "Parent.h"
-#import "Product.h"
-
+#import <CoreData/CoreData.h>
+#import "Company+CoreDataProperties.h"
+#import "Product+CoreDataProperties.h"
+#import "CompanyViewController.h"
 
 //also known as a "factory class"
 
 @interface DataAccessObject : NSObject
 
-@property (nonatomic, retain, readonly) NSMutableArray *companyList;
-@property (nonatomic, retain, readonly) NSMutableArray *products;
-
-@property (nonatomic, retain, readonly) NSMutableArray *appleProduct;
-@property (nonatomic, retain, readonly) NSMutableArray *samsungProduct;
-@property (nonatomic, retain, readonly) NSMutableArray *googleProduct;
-@property (nonatomic, retain, readonly) NSMutableArray *nokiaProduct;
-
-
-
-
-
-
-
 + (instancetype)sharedInstance;
 
-- (void)addCompanyWithName:(NSString *)name andLogo:(NSString *)logo andSymbol:(NSString *)symbol andID:(NSInteger)company_ID andWriteToDataBase:(BOOL)writeToDataBase;
+@property (nonatomic, retain) NSMutableArray *companyList;
+@property (nonatomic, retain) NSMutableArray *products;
 
-- (void)addProductWithName:(NSString *)name andLogo:(NSString *)logo andUrl:(NSString *)url toCompanyWithID:(NSInteger)company_ID andWriteToDataBase:(BOOL)writeToDataBase andProductID:(NSInteger)product_ID;
+@property (nonatomic, retain) NSMutableArray *appleProduct;
+@property (nonatomic, retain) NSMutableArray *samsungProduct;
+@property (nonatomic, retain) NSMutableArray *googleProduct;
+@property (nonatomic, retain) NSMutableArray *nokiaProduct;
 
-- (void)checkAndCreateDatabase;
 
-- (void)writeCompanyToDataBase:(Parent *)company;
-- (void)writeProductToDataBase:(Product *)product;
+@property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (strong, nonatomic) NSManagedObjectModel *managedObjectModel;
+@property (strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
+
+- (void)saveContext;
+- (NSURL *)applicationDocumentsDirectory;
+
+- (void)addCompanyWithName:(NSString *)name andLogo:(NSString *)logo andSymbol:(NSString *)symbol;
+- (void)addProductToCompany:(Company *)company andName:(NSString *)name andLogo:(NSString *)logo andUrl:(NSString *)url;
+
+
+- (void)removeProduct:(Product *)product fromCompany:(Company *)company;
+- (void)removeCompany:(Company *)company;
 
 
 @end

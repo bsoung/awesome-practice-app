@@ -11,46 +11,54 @@
 #import "WebViewController.h"
 #import "Product.h"
 #import "AddProductViewController.h"
-//#import "Parent.h"
+#import "ProductCollectionViewCell.h"
 
-@interface ProductViewController ()
+
+
+@interface ProductViewController () <UICollectionViewDataSource, UICollectionViewDelegate>
 
 @end
 
 @implementation ProductViewController
 
-
-- (void)dealloc
+- (void)loadView
 {
-    [super dealloc];
-    [self.company release];
-}
-
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) { }
-    return self;
+    [super loadView];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
- 
-    self.clearsSelectionOnViewWillAppear = NO;
-    self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    self.navigationItem.leftBarButtonItem = nil;
- 
 }
+
+-(void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    self.title = @"Devices";
+    self.navigationItem.leftBarButtonItem = nil;
+}
+
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated
 {
     [super setEditing:editing animated:animated];
+    static UIBarButtonItem *addButton = nil;
     
     if (editing) {
-        UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addProduct: )];
+        if (addButton) {
+            [addButton release];
+            addButton = nil;
+        }
+        
+        addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addProduct: )];
         [self.navigationItem setLeftBarButtonItem:addButton]; 
     } else {
+        if (addButton) {
+            [addButton release];
+            addButton = nil;
+        }
         self.navigationItem.leftBarButtonItem = nil;
     }
 }
@@ -60,92 +68,124 @@
 {
     
     [super viewWillAppear:animated];
-    [self.tableView reloadData];
+    self.products = [NSMutableArray arrayWithArray: [self.company.products allObjects]];
+    
+    //sorting array, or else the indexes change but nothing is sorted
+   self.products = [NSMutableArray arrayWithArray:[self.products sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+       Product *productOne = (Product *)obj1;
+       Product *productTwo = (Product *)obj2;
+       
+       if (productOne.index < productTwo.index) {
+           return NSOrderedAscending;
+       } else {
+           return NSOrderedDescending;
+       }
+   }]];
+    
+    [self.collectionView reloadData];
  
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
 
-#pragma mark - Table view data source
+#pragma mark - Collection view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+
+-(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     return 1;
+
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return [self.company.products count];
+    return [self.products count];
+
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    Product *tempProd = [self.company.products objectAtIndex:[indexPath row]];
-    cell.textLabel.text = tempProd.name;
-    cell.imageView.image = [UIImage imageNamed:tempProd.logo];
+    Product *product = [self.products objectAtIndex:[indexPath row]];
+    
+    static NSString *cellIdentifier = @"ProductCell";
+    
+    ProductCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
+    
+    cell.titleLabel.text = product.product_name;
+    UIImage *image = [UIImage imageNamed:product.product_logo];
+    cell.imageView.image = image;
+   
     return cell;
-}
-
-
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
     
-    return YES;
 }
 
 
-
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+-(void)collectionView:(UICollectionView *)collectionView moveItemAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
- 
-        [self.company.products removeObjectAtIndex:indexPath.row];
-        [tableView reloadData];
+    NSString *stringToMove = self.products[sourceIndexPath.row];
+    [self.products removeObjectAtIndex:sourceIndexPath.row];
+    [self.products insertObject:stringToMove atIndex:destinationIndexPath.row];
+    
+    //override index by for/in loop
+    NSInteger i = 0;
+    for (Product *product in self.products) {
+        product.index = @(i);
+        i++;
     }
+
+    [[DataAccessObject sharedInstance] saveContext];
 }
 
-
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
+-(BOOL)collectionView:(UICollectionView *)collectionView canMoveItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *stringToMove = self.company.products[sourceIndexPath.row];
-    [self.company.products removeObjectAtIndex:sourceIndexPath.row];
-    [self.company.products insertObject:stringToMove atIndex:destinationIndexPath.row];
-}
-
-
-
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    
     return YES;
+
 }
 
+#pragma mark - Collection view delegate
 
 
-#pragma mark - Table view delegate
-
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    Product *product = self.company.products[indexPath.row];
+    if (self.editing) {
+        [self.collectionView performBatchUpdates:^{
+            
+            NSArray *selectedItemsAtIndexPath = [self.collectionView indexPathsForSelectedItems];
+            
+            [self deleteItemsFromDataSourceAtIndexPaths:selectedItemsAtIndexPath];
+            [self.collectionView deleteItemsAtIndexPaths:selectedItemsAtIndexPath];
+            
+        }  completion:nil];
+        
+        
+    } else {
+        
+        Product *product = self.products[indexPath.row];
+        
+        WebViewController *webview = [[WebViewController alloc] initWithNibName:@"WebViewController" bundle:[NSBundle mainBundle]];
+        webview.url = [NSURL URLWithString:product.product_url];
+        
+        [self.navigationController
+         pushViewController:webview
+         animated:YES];
+    }
     
-    WebViewController *webview = [[WebViewController alloc] initWithNibName:@"WebViewController" bundle:[NSBundle mainBundle]];
-    webview.url = [NSURL URLWithString:product.url];
+}
+
+#pragma mark - Methods for manipulating Collection view
+
+- (void)deleteItemsFromDataSourceAtIndexPaths:(NSArray *)itemPaths
+{
+    NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
+    for (NSIndexPath *itemPath in itemPaths) {
+        [indexSet addIndex:itemPath.row];
+        
+        //get product first, by referring to its location
+        Product *product = [self.products objectAtIndex:itemPath.row];
+        [[DataAccessObject sharedInstance] removeProduct:product fromCompany:self.company];
+    }
     
-    [self.navigationController
-     pushViewController:webview
-     animated:YES];
+    [self.products removeObjectsAtIndexes:indexSet];
 }
 
 - (void)addProduct:(id)sender
@@ -155,6 +195,20 @@
     addVC.company = self.company;
     
     [self.navigationController pushViewController:addVC animated:YES];
+    
+}
+
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+}
+
+-(void)dealloc
+{
+    [self.company release];
+    [self.products release];
+    [super dealloc];
     
 }
 

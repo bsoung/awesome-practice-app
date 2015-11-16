@@ -8,10 +8,12 @@
 
 #import "CompanyViewController.h"
 #import "ProductViewController.h"
-#import "Parent.h"
-#import "Product.h"
+#import "Company+CoreDataProperties.h"
+#import "Product+CoreDataProperties.h"
 #import "DataAccessObject.h"
 #import "AddCompanyViewController.h"
+#import "CompanyCollectionViewCell.h"
+#import "AFNetworking.h"
  
 @interface CompanyViewController ()
 
@@ -21,172 +23,215 @@
 
 @end
 
-
-
 @implementation CompanyViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    
-    if (self) { }
-    return self;
-}
 
+
+- (void)loadView
+{
+    [super loadView];
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
- 
-    self.clearsSelectionOnViewWillAppear = NO;
+}
+
+
+- (void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
     self.title = @"Mobile device makers";
     self.navigationItem.leftBarButtonItem = nil;
-    
-    
-    [[DataAccessObject sharedInstance] checkAndCreateDatabase];
-    
 }
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.collectionView reloadData];
+}
+
+
+#pragma mark - Methods for editing Collection view
 
 
 - (void) setEditing:(BOOL)editing animated:(BOOL)animated
 {
     [super setEditing:editing animated:animated];
+    static UIBarButtonItem *addButton = nil;
     
     if (editing) {
-        UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addCompany: )];
+        if (addButton) {
+            [addButton release];
+            addButton = nil;
+        }
+        addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addCompany: )];
         [self.navigationItem setLeftBarButtonItem:addButton];
     } else {
+        if (addButton) {
+            [addButton release];
+            addButton = nil;
+        }
         self.navigationItem.leftBarButtonItem = nil;
     }
 }
 
-
-- (void)viewWillAppear:(BOOL)animated
+- (void)deleteItemsFromDataSourceAtIndexPaths:(NSArray *)itemPaths
 {
-    [super viewWillAppear:animated];
-    [self.tableView reloadData];
-
+    NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSet];
+    for (NSIndexPath *itemPath in itemPaths) {
+        [indexSet addIndex:itemPath.row];
+        Company *company = [[DataAccessObject sharedInstance].companyList objectAtIndex:itemPath.row];
+        [[DataAccessObject sharedInstance] removeCompany:company];
+    }
+    
 }
+
 
 - (void)addCompany:(id)sender
 {
-    
     AddCompanyViewController *addVC = [[AddCompanyViewController alloc] init];
     [self.navigationController pushViewController:addVC animated:YES];
 
+}
+
+-(BOOL)collectionView:(UICollectionView *)collectionView canMoveItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+    
+}
+
+-(void)collectionView:(UICollectionView *)collectionView moveItemAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
+{
+    Company *companyToMove = [DataAccessObject sharedInstance].companyList[sourceIndexPath.row];
+    [[DataAccessObject sharedInstance].companyList removeObjectAtIndex:sourceIndexPath.row];
+    [[DataAccessObject sharedInstance].companyList insertObject:companyToMove atIndex:destinationIndexPath.row];
+    
+    NSInteger i = 0;
+    for (Company *company in [DataAccessObject sharedInstance].companyList) {
+        company.index = @(i);
+        i++;
+    }
+    
+    [[DataAccessObject sharedInstance] saveContext];
+    
+}
+
+#pragma mark - Collection view data source WITH AFNetworking
+
+-(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    return 1;
+}
+
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    return [[[DataAccessObject sharedInstance] companyList] count];
+
+}
+
+-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    
+    Company *company = [DataAccessObject sharedInstance].companyList[indexPath.row];
+    
+    static NSString *cellIdentifier = @"CompanyCell";
+    
+    CompanyCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
+    
+    cell.titleLabel.text = company.company_name;
+    UIImage *image = [UIImage imageNamed:company.company_logo];
+    cell.imageView.image = image;
+    cell.stockSymbol.text = company.company_symbol;
+    
+    NSString *stockSymbol = company.company_symbol;
+    
+    //AFNetworking
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    
+    //Set rules for acceptable types of content from stock quote API
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"text/plain", @"text/json", @"text/javascript", @"application/json", nil];
+    
+    //Getting stock quotes
+    [manager GET:[NSString stringWithFormat:@"http://dev.markitondemand.com/Api/v2/Quote/json?symbol=%@", stockSymbol]
+      parameters:nil
+         success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+             
+             cell.nameLabel.text = [NSString stringWithFormat:@" | Current Stock Price %@", [responseObject objectForKey:@"LastPrice"]];
+             NSLog(@"JSON: %@", responseObject);
+             
+         }
+         failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+             cell.nameLabel.text = @"";
+             NSLog(@"Error: %@", error);
+         }];
+    
+    
+    return cell;
+    
+}
+
+#pragma mark - Collection view delegate
+
+
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    if (self.editing) {
+        [self.collectionView performBatchUpdates:^{
+            
+            NSArray *selectedItemsAtIndexPath = [self.collectionView indexPathsForSelectedItems];
+            
+            //delete the items from data source
+            [self deleteItemsFromDataSourceAtIndexPaths: selectedItemsAtIndexPath];
+            
+            //delete the items from index path as well
+            [self.collectionView deleteItemsAtIndexPaths:selectedItemsAtIndexPath];
+            
+        } completion:^(BOOL finished) {
+            
+        }];
+        
+        
+    } else {
+        
+        Company *company = [DataAccessObject sharedInstance].companyList[indexPath.row];
+        NSLog(@"%@",company.company_name);
+        
+        //Must create and pass in a layout object when initializing
+        ProductViewController *productViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ProductViewController"];
+        
+        productViewController.title = company.company_name;
+        productViewController.company = company;
+        
+        [self.navigationController
+         pushViewController:productViewController
+         animated:YES];
+    }
+    
 }
 
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
- 
+    
 }
 
 - (void)dealloc
 {
+    [self.nameLabel release];
+    [self.priceLabel release];
+    [self.model release];
+    [self.collectionView release];
     [super dealloc];
-    [self.productViewController release];
-
 }
-
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return [[[DataAccessObject sharedInstance] companyList] count];
-}
-
-
-
-
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
     
-    Parent *parent = [DataAccessObject sharedInstance].companyList[indexPath.row];
-    cell.textLabel.text = parent.name;
-    cell.imageView.image = [UIImage imageNamed:parent.logo];
     
-    NSString *stockSymbol = parent.symbol;
-    NSURL *apiURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://dev.markitondemand.com/Api/v2/Quote/json?symbol=%@", stockSymbol]];
-    NSData *apiJSONData = [NSData dataWithContentsOfURL:apiURL];
-    NSDictionary *stockData = [NSJSONSerialization JSONObjectWithData:apiJSONData options:NSJSONReadingMutableContainers error:nil];
-    
-    self.nameLabel = [NSString stringWithFormat:@" | Current Stock Price %@", [stockData objectForKey:@"LastPrice"]];
-    
-    NSString *cellText = [parent.name stringByAppendingString:self.nameLabel];
-    [[cell textLabel] setText:cellText];
-    
-  
-    return cell;
-}
-
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return YES;
-}
- 
-
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-
-        [[DataAccessObject sharedInstance].companyList removeObjectAtIndex:indexPath.row];
-        [tableView reloadData];
-    }
-}
-
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath
-{
-    NSString *stringToMove = [DataAccessObject sharedInstance].companyList[sourceIndexPath.row];
-    [[DataAccessObject sharedInstance].companyList removeObjectAtIndex:sourceIndexPath.row];
-    [[DataAccessObject sharedInstance].companyList insertObject:stringToMove atIndex:destinationIndexPath.row];
-}
-
-
-
- 
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
- 
-    return YES;
-}
-
-
- 
-
-
-#pragma mark - Table view delegate
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    Parent *parent = [DataAccessObject sharedInstance].companyList[indexPath.row];
-    NSLog(@"%@",parent.name);
-    self.productViewController.title = parent.name;
-    
-    self.productViewController.company = parent;
-    
-    [self.navigationController
-        pushViewController:self.productViewController
-        animated:YES];
-    
-}
-
-
 
 
 @end

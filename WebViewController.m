@@ -7,8 +7,7 @@
 //
 
 #import "WebViewController.h"
-#import "Parent.h"
-#import "Product.h"
+#import "Company.h"
 
 @interface WebViewController ()
 @property (retain, nonatomic) IBOutlet UIWebView *webView;

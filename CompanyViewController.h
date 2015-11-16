@@ -11,8 +11,7 @@
 #import "ProductViewController.h"
 
 
-@interface CompanyViewController : UITableViewController
-@property (nonatomic, retain) IBOutlet  ProductViewController * productViewController;
+@interface CompanyViewController : UICollectionViewController
 @property (nonatomic, retain, readonly) NSString *nameLabel;
 @property (nonatomic, retain, readonly) NSString *priceLabel;
 

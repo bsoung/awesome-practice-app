@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Parent.h"
-#import "Product.h"
+#import "Company+CoreDataProperties.h"
+#import "Product+CoreDataProperties.h"
 
 @interface AddProductViewController : UIViewController
 
@@ -17,7 +17,7 @@
 @property (nonatomic, retain) IBOutlet UITextField *addProductURL;
 @property (nonatomic, retain) IBOutlet UIButton *productButton;
 @property (nonatomic, retain) IBOutlet UIButton *cancelButton;
-@property (nonatomic, retain) Parent *company;
+@property (nonatomic, retain) Company *company;
 @property (nonatomic, retain) Product *product;
 
 

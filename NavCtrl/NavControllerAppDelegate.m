@@ -15,9 +15,10 @@
 {
     
     // Override point for customization after application launch.
-    UIViewController *rootController =
-    [[CompanyViewController alloc]
-     initWithNibName:@"CompanyViewController" bundle:nil];
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"CompanyViewController" bundle:[NSBundle mainBundle]];
+    
+    UIViewController *rootController = [storyboard instantiateViewControllerWithIdentifier:@"CompanyViewController"];
     
     self.navigationController = [[UINavigationController alloc]
                             initWithRootViewController:rootController];
@@ -63,6 +64,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
+    [[DataAccessObject sharedInstance ] saveContext];
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 

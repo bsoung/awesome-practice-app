@@ -9,5 +9,9 @@
 #import <UIKit/UIKit.h>
 
 @interface CompanyCollectionViewCell : UICollectionViewCell
+@property (nonatomic, retain, readonly) UILabel *titleLabel;
+@property (nonatomic, retain, readonly) UIImageView *imageView;
+@property (nonatomic, retain, readonly) UILabel *stockSymbol;
+@property (nonatomic, retain, readonly) UILabel *nameLabel;
 
 @end

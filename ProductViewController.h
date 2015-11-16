@@ -7,10 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Parent.h"
+#import "Company+CoreDataProperties.h"
 
-@interface ProductViewController : UITableViewController
-/*@property (nonatomic, retain) NSMutableArray *products;*/
-@property (nonatomic, retain) Parent *company;
+
+@interface ProductViewController : UICollectionViewController
+
+@property (nonatomic, retain) Company *company;
+@property (nonatomic, retain) NSMutableArray *products;
+
+
+
+
 
 @end

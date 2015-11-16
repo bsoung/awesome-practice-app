@@ -7,431 +7,407 @@
 //
 
 #import "DataAccessObject.h"
-#import "Product.h"
+
+
 
 
 @interface DataAccessObject ()
 
 
-@property (nonatomic, retain, readwrite) NSMutableArray *companyList;
-@property (nonatomic, retain, readwrite) NSMutableArray *products;
-@property (nonatomic, retain, readwrite) NSMutableArray *appleProduct;
-@property (nonatomic, retain, readwrite) NSMutableArray *samsungProduct;
-@property (nonatomic, retain, readwrite) NSMutableArray *googleProduct;
-@property (nonatomic, retain, readwrite) NSMutableArray *nokiaProduct;
-
+@property (nonatomic, assign) BOOL doesDatabaseExist;
 
 @end
 
-//declaring database
-static sqlite3 *database;
-
-
 @implementation DataAccessObject
 
+#pragma mark - Singleton pattern creation
 
 + (instancetype)sharedInstance
 {
     static DataAccessObject *instance;
     
-    static dispatch_once_t onceToken; //# of times
+    //# of times, only once
+    static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^
     {
         instance = [[DataAccessObject alloc] init];
+        
+        //set up store coordinator for core data
+        [instance persistentStoreCoordinator];
+        [instance createDataIfNeeded];
+        
     });
 
     return instance;
 }
 
 
--(void)loadCompanyManually{
-    self.appleProduct = [NSMutableArray arrayWithObjects:
-                         [[Product alloc]
-                          initWithName:@"iPad"
-                          andUrl:@"https://www.apple.com/ipad/"
-                          andLogo:@"ipadlogo.jpeg" andCompanyID:1 andProductID:1],
-                         
-                         [[Product alloc]
-                          initWithName:@"iPhone"
-                          andUrl:@"https://www.apple.com/iphone/"
-                          andLogo:@"iphonelogo.jpeg" andCompanyID:1 andProductID:2],
-                         
-                         [[Product alloc]
-                          initWithName:@"iTouch"
-                          andUrl:@"https://www.apple.com/shop/buy-ipod/ipod-touch"
-                          andLogo:@"itouchlogo.jpeg" andCompanyID:1 andProductID:3],
-                         nil];
-    
-    self.samsungProduct = [NSMutableArray arrayWithObjects:
-                           [[Product alloc]
-                            initWithName:@"Galaxy S4"
-                            andUrl:@"http://www.samsung.com/global/microsite/galaxys4/"
-                            andLogo:@"galaxys4logo.jpeg" andCompanyID:2 andProductID:4],
-                           
-                           [[Product alloc]
-                            initWithName:@"Galaxy Note"
-                            andUrl:@"https://www.samsung.com/global/microsite/galaxynote/note/index.html?type=find"
-                            andLogo:@"galaxynotelogo.jpeg" andCompanyID:2 andProductID:5],
-                           
-                           [[Product alloc]
-                            initWithName:@"Galaxy Tab"
-                            andUrl:@"https://www.samsung.com/us/mobile/galaxy-tab/"
-                            andLogo:@"galaxytablogo.jpeg" andCompanyID:2 andProductID:6],
-                           nil];
-    
-    self.googleProduct = [NSMutableArray arrayWithObjects:
-                          [[Product alloc]
-                           initWithName:@"Nexus 6"
-                           andUrl:@"https://www.google.com/nexus/6p/"
-                           andLogo:@"nexus6logo.jpeg" andCompanyID:3 andProductID:7],
-                          
-                          [[Product alloc]
-                           initWithName:@"Nexus 7"
-                           andUrl:@"https://store.google.com/product/nexus_7"
-                           andLogo:@"nexus7logo.jpeg" andCompanyID:3 andProductID:8],
-                          
-                          [[Product alloc]
-                           initWithName:@"Nexus 9"
-                           andUrl:@"https://www.google.com/nexus/9/"
-                           andLogo:@"nexus9logo.jpg" andCompanyID:3 andProductID:9],
-                          nil];
-    
-    self.nokiaProduct = [NSMutableArray arrayWithObjects:
-                         [[Product alloc]
-                          initWithName:@"Nokia 640"
-                          andUrl:@"https://www.microsoft.com/en-us/mobile/phone/lumia640/"
-                          andLogo:@"lumia640logo.jpeg" andCompanyID:4 andProductID:10],
-                         
-                         [[Product alloc]
-                          initWithName:@"Nokia 640 XL"
-                          andUrl:@"https://www.microsoft.com/en-us/mobile/phone/lumia640-xl/"
-                          andLogo:@"lumia640xllogo.jpeg" andCompanyID:4 andProductID:11],
-                         
-                         [[Product alloc]
-                          initWithName:@"Nokia 1520"
-                          andUrl:@"https://www.microsoft.com/en-us/mobile/phone/lumia1520/"
-                          andLogo:@"nokia1520logo.jpeg" andCompanyID:4 andProductID:12], nil];
-    
-    self.companyList = [NSMutableArray arrayWithObjects:
-                        [[Parent alloc]
-                         initWithName:@"Apple"
-                         andLogo:@"applelogo.jpeg"
-                         andProduct:self.appleProduct
-                         andSymbol:@"AAPL" andID:1],
-                        
-                        [[Parent alloc]
-                         initWithName:@"Samsung"
-                         andLogo:@"samsunglogo.jpeg"
-                         andProduct:self.samsungProduct
-                         andSymbol:@"BBRY" andID:2],
-                        
-                        [[Parent alloc]
-                         initWithName:@"Google"
-                         andLogo:@"googlelogo.jpeg"
-                         andProduct:self.googleProduct
-                         andSymbol:@"GOOG" andID:3],
-                        
-                        [[Parent alloc]
-                         initWithName:@"Nokia"
-                         andLogo:@"nokialogo.jpeg"
-                         andProduct:self.nokiaProduct
-                         andSymbol:@"MSFT" andID:4], nil];
-}
-
-- (void)addCompanyWithName:(NSString *)name andLogo:(NSString *)logo andSymbol:(NSString *)symbol andID:(NSInteger)company_ID andWriteToDataBase:(BOOL)writeToDataBase
+- (void)createDataIfNeeded
 {
-    if (!logo || logo.length == 0) {
-    logo = @"questionmark.jpeg";
+    self.companyList = [NSMutableArray array];
+
+    if (![self doesDatabaseExist]) {
+        [self createAppleData];
+        [self createSamsungData];
+        [self createGoogleProduct];
+        [self createNokiaData];
+        [self saveContext];
+        
+    } else {
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+        NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:self.managedObjectContext];
+        [fetchRequest setEntity:entityDescription];
+        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"index" ascending:YES];
+        
+        [fetchRequest setSortDescriptors:@[sortDescriptor]];
+        
+
+        NSError *error = nil;
+        NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+        
+        if (!error) {
+            self.companyList = [NSMutableArray arrayWithArray:fetchedObjects];
+            
+        } else {
+            NSLog(@"Cannot fetch companies: %@", error);
+        }
+        
+        [fetchRequest release];
+        [sortDescriptor release];
     }
     
-    //check if yes or no. if yes, call the write to database. else, no. call it from inside the addcompanywithname method
+}
+
+#pragma mark - Methods for creating each Company and Product
+
+- (void)createAppleData
+{
+    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:self.managedObjectContext];
+    Company *company = (Company *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    company.company_name = @"Apple";
+    company.company_logo = @"applelogo.jpeg";
+    company.company_symbol = @"AAPL";
+    company.index = @0;
     
-    if (writeToDataBase == YES) {
-        Parent *company = [[Parent alloc] initWithName:name andLogo:logo andProduct:[NSMutableArray array] andSymbol:symbol andID:company_ID];
-        [self.companyList addObject:company];
-        [self writeCompanyToDataBase:company];
-    } else {
-    Parent *company = [[Parent alloc] initWithName:name andLogo:logo andProduct:[NSMutableArray array] andSymbol:symbol andID:company_ID];
+    NSMutableSet *products = [NSMutableSet set];
+    
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productOne = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productOne.product_name = @"iPad";
+    productOne.product_logo = @"ipadlogo.jpeg";
+    productOne.product_url = @"https://www.apple.com/ipad/"; 
+    productOne.index = @0;
+    
+    [products addObject:productOne];
+    
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productTwo = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productTwo.product_name = @"iPhone";
+    productTwo.product_logo = @"iphonelogo.jpeg";
+    productTwo.product_url = @"https://www.apple.com/iphone/";
+    productTwo.index = @1;
+    
+    [products addObject:productTwo];
+    
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productThree = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productThree.product_name = @"iTouch";
+    productThree.product_logo = @"itouchlogo.jpeg";
+    productThree.product_url = @"https://www.apple.com/shop/buy-ipod/ipod-touch";
+    productThree.index = @2;
+    
+    [products addObject:productThree];
+    
+    company.products = [NSSet setWithSet:products];
     
     [self.companyList addObject:company];
-    
-    NSLog(@"Adding company: %@", name);
-    }
 
 }
 
-//- (void)addProductToCompany:(Parent *)company withName:(NSString *)name andLogo:(NSString *)logo andUrl:(NSString *)url
-
-- (void)addProductWithName:(NSString *)name andLogo:(NSString *)logo andUrl:(NSString *)url toCompanyWithID:(NSInteger)company_ID andWriteToDataBase:(BOOL)writeToDataBase andProductID:(NSInteger)product_ID;
+- (void)createSamsungData
 {
-    if (!logo || logo.length == 0) {
-        logo = @"questionmark.jpeg";
-    }
+    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:self.managedObjectContext];
+    Company *company = (Company *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    company.company_name = @"Samsung";
+    company.company_logo = @"samsunglogo.jpeg";
+    company.company_symbol = @"BBRY";
+    company.index = @1;
     
+    NSMutableSet *products = [NSMutableSet set];
     
-    if ([self.companyList count] == 0) {
-        return;
-    }
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productOne = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productOne.product_name = @"Galaxy S4";
+    productOne.product_logo = @"galaxys4logo.jpeg";
+    productOne.product_url = @"https://www.samsung.com/global/microsite/galaxys4/";
+    productOne.index = @0;
     
-    if (writeToDataBase == YES) {
-        Product *product = [[Product alloc] initWithName:name andUrl:url andLogo:logo andCompanyID:company_ID andProductID:product_ID];
-        [self.products addObject:product];
-        [self writeProductToDataBase:product];
-        NSLog(@"Adding product: %@", name);
-        }
+    [products addObject:productOne];
     
-    Parent *theCompany = nil;
-    for (Parent *company in self.companyList) {
-        if (company.company_ID == company_ID) { //here company.company_ID == company_ID
-            theCompany = company;
-            break;
-            
-        }
-        
-    }
-        if (theCompany) {
-            Product *product = [[Product alloc] initWithName:name andUrl:url andLogo:logo andCompanyID:company_ID andProductID:product_ID];
-            [theCompany.products addObject:product];
-            [self writeProductToDataBase:product];
-            NSLog(@"Adding product: %@", name);
-        }
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productTwo = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productTwo.product_name = @"Galaxy Note";
+    productTwo.product_logo = @"galaxynotelogo.jpeg";
+    productTwo.product_url = @"https://www.samsung.com/global/microsite/galaxynote/note/index.html?type=find";
+    productTwo.index = @1;
+    
+    [products addObject:productTwo];
+    
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productThree = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productThree.product_name = @"Galaxy Tab";
+    productThree.product_logo = @"galaxytablogo.jpeg";
+    productThree.product_url = @"https://www.samsung.com/us/mobile/galaxy-tab/";
+    productOne.index = @2;
+    
+    [products addObject:productThree];
+    
+    company.products = [NSSet setWithSet:products];
+    
+    [self.companyList addObject:company];
 
 }
 
-
-
-
-- (NSString *)databaseDocumentPath
+- (void)createGoogleProduct
 {
-    //get path to documents directory
-    NSArray *documentPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *path = [[documentPaths objectAtIndex:0] stringByAppendingPathComponent:@"Company.sql"];
-    NSLog(@"%@",path);
-    return path;
-}
-
-- (void)checkAndCreateDatabase
-{
-    //enter code
-    NSString *path = [self databaseDocumentPath];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if(![fileManager fileExistsAtPath:path]){
-        
-        //Copy your db file from bundle to your path
-        NSString *sourcePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Company.sql"];
-        NSLog(@"%@",sourcePath);
-        NSError *error;
-        
-        [[NSFileManager defaultManager] copyItemAtPath:sourcePath
-                                                toPath:path
-                                                 error:&error];
-        
-        if (error) {
-            NSLog(@"Error description-%@ \n", [error localizedDescription]);
-            NSLog(@"Error reason-%@", [error localizedFailureReason]);
-        }
-       
-        
-        // Here call the method which load self.companyList
-        [self loadCompanyManually];
-            
-        // Load the database using self.companyList
-        for (int i=0; i<[self.companyList count]; i++) {
-            Parent *company = [self.companyList objectAtIndex:i];
-            [self writeCompanyToDataBase:company];
-            for (int j=0; j<[company.products count]; j++) {
-                Product *product = [company.products objectAtIndex:j];
-                [self writeProductToDataBase:product];
-            }
-        }
-        
-    } else {
-        NSLog(@"File Already Exist");
-        
-       
-        [self loadCompanyFromDatabase];
-        [self loadProductFromDataBase];
-        
-        // Fetch From Database
-    }
+    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:self.managedObjectContext];
+    Company *company = (Company *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    company.company_name = @"Google";
+    company.company_logo = @"googlelogo.jpeg";
+    company.company_symbol = @"GOOG";
+    company.index = @2;
     
-}
-
-- (void)loadCompanyFromDatabase
-{
-    if ( (sqlite3_open( [[self databaseDocumentPath] UTF8String], &database)) != SQLITE_OK) {
-        NSLog(@"Error: cannot open database");
-    } else {
-        
-        NSString *sqlStatement = [NSString stringWithFormat:@"select * from Company"];
-        sqlite3_stmt *selectStatement;
-        
-        if (sqlite3_prepare_v2(database, [sqlStatement UTF8String], -1, &selectStatement, NULL) == SQLITE_OK) {
-            int i = 0;
-            self.companyList = [NSMutableArray array];
-            while (sqlite3_step(selectStatement) == SQLITE_ROW) {
-                
-                NSString *name = nil;
-                NSString *symbol = nil;
-                NSString *logo = nil;
-                NSInteger company_id = 0;
-                
-                char *chName = (char *)sqlite3_column_text(selectStatement, 0);
-                if (chName != NULL) {
-                    name = [NSString stringWithUTF8String:chName];
-                } else {
-                    i++;
-                    continue;
-                }
-                
-                char *chSymbol = (char *)sqlite3_column_text(selectStatement, 1);
-                if (chSymbol != NULL) {
-                    symbol = [NSString stringWithUTF8String:chSymbol];
-                } else {
-                    i++;
-                    continue;
-                }
-                
-                char *chLogo = (char *)sqlite3_column_text(selectStatement, 2);
-                if (chLogo != NULL) {
-                    logo = [NSString stringWithUTF8String:chLogo];
-                } else {
-                    i++;
-                    continue;
-                }
-                
-                company_id = sqlite3_column_int(selectStatement, 3);
-                
-                [self addCompanyWithName:name andLogo:logo andSymbol:symbol andID:company_id andWriteToDataBase:NO]; //helper method
-            }
-       
-        }
-        sqlite3_close(database);
-    }
+    NSMutableSet *products = [NSMutableSet set];
+    
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productOne = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productOne.product_name = @"Nexus 6";
+    productOne.product_logo = @"nexus6logo.jpeg";
+    productOne.product_url = @"https://www.google.com/nexus/6p/";
+    productOne.index = @0;
+    
+    [products addObject:productOne];
+    
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productTwo = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productTwo.product_name = @"Nexus 7";
+    productTwo.product_logo = @"nexus7logo.jpeg";
+    productTwo.product_url = @"https://store.google.com/product/nexus_7";
+    productTwo.index = @1;
+    
+    [products addObject:productTwo];
+    
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productThree = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productThree.product_name = @"Nexus 9";
+    productThree.product_logo = @"nexus9logo.jpg";
+    productThree.product_url = @"https://www.google.com/nexus/9/";
+    productThree.index = @2;
+    
+    [products addObject:productThree];
+    
+    company.products = [NSSet setWithSet:products];
+    
+    [self.companyList addObject:company];
 
 }
 
-- (void)loadProductFromDataBase
+- (void)createNokiaData
 {
-    if ( (sqlite3_open( [[self databaseDocumentPath] UTF8String], &database)) != SQLITE_OK) {
-        NSLog(@"Error: cannot open database");
-    } else {
-        
-        NSString *sqlStatement = [NSString stringWithFormat:@"select * from Product"]; //open product
-        sqlite3_stmt *selectStatement;
-        
-        if (sqlite3_prepare_v2(database, [sqlStatement UTF8String], -1, &selectStatement, NULL) == SQLITE_OK) {
-            int i = 0;
-            self.products = [NSMutableArray array];
-            while (sqlite3_step(selectStatement) == SQLITE_ROW) {
-                
-                NSString *name = nil;
-                NSString *logo = nil;
-                NSString *url = nil;
-                NSInteger company_id = -1;
-                NSInteger product_id = 0;
-                
-                char *chName = (char *)sqlite3_column_text(selectStatement, 1);
-                if (chName != NULL) {
-                    name = [NSString stringWithUTF8String:chName];
-                } else {
-                    i++;
-                    continue;
-                }
-                
-                char *chLogo = (char *)sqlite3_column_text(selectStatement, 2);
-                if (chLogo != NULL) {
-                    logo = [NSString stringWithUTF8String:chLogo];
-                } else {
-                    i++;
-                    continue;
-                }
-                
-                char *chUrl = (char *)sqlite3_column_text(selectStatement, 3);
-                if (chUrl != NULL) {
-                    url = [NSString stringWithUTF8String:chUrl];
-                } else {
-                    i++;
-                    continue;
-                }
-                
-                company_id = sqlite3_column_int(selectStatement, 4);
-                
-                product_id = sqlite3_column_int(selectStatement, 0);
-                
-        
-                [self addProductWithName:name andLogo:logo andUrl:url toCompanyWithID:company_id andWriteToDataBase:NO andProductID:product_id];
-            }
-            
-        }
-        
-        sqlite3_close(database);
-        
-    }
+    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:self.managedObjectContext];
+    Company *company = (Company *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    company.company_name = @"Nokia";
+    company.company_logo = @"nokialogo.jpeg";
+    company.company_symbol = @"MSFT";
+    company.index = @3;
     
-}
-
-- (void)writeCompanyToDataBase:(Parent *)company //use this method
-{
+    NSMutableSet *products = [NSMutableSet set];
     
-    char *error = NULL;
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productOne = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productOne.product_name = @"Lumia 640";
+    productOne.product_logo = @"lumia640logo.jpeg";
+    productOne.product_url = @"https://www.microsoft.com/en-us/mobile/phone/lumia640/";
+    productOne.index = @0;
     
-    if ( (sqlite3_open( [[self databaseDocumentPath] UTF8String], &database)) == SQLITE_OK) {
-        NSLog(@"Error: cannot open database");
-        NSString *sqlStatement = [NSString stringWithFormat:
-                                  @"insert into Company (company_name, company_symbol, company_logo, company_id) values ('%s' ,'%s', '%s', '%d')",
-                                  [company.name UTF8String],
-                                  [company.symbol UTF8String],
-                                  [company.logo UTF8String],
-                                  (int)company.company_ID];
-        
-        if (sqlite3_exec(database, [sqlStatement UTF8String], NULL, NULL, &error) == SQLITE_OK) {
-            NSLog(@"Company added to DB");
-//            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Add Company Complete" message:@"Company added to DB" delegate:self cancelButtonTitle:@"Close" otherButtonTitles:nil];
-//            [alert show];
-        }
-        sqlite3_close(database);
-
-    } else {
-        NSLog(@"Error: %s", error);
-    }
+    [products addObject:productOne];
+    
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productTwo = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productTwo.product_name = @"Lumia 640 XL";
+    productTwo.product_logo = @"lumia640xllogo.jpeg";
+    productTwo.product_url = @"https://www.microsoft.com/en-us/mobile/phone/lumia640-xl/";
+    productTwo.index = @1;
+    
+    [products addObject:productTwo];
+    
+    entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *productThree = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    productThree.product_name = @"Lumia 1520";
+    productThree.product_logo = @"nokia1520logo.jpeg";
+    productThree.product_url = @"https://www.microsoft.com/en-us/mobile/phone/lumia1520/";
+    productThree.index = @2;
+    
+    [products addObject:productThree];
+    
+    company.products = [NSSet setWithSet:products];
+    
+    [self.companyList addObject:company];
 
 }
 
-- (void)writeProductToDataBase:(Product *)product
+#pragma mark - Methods for manipulating Companies and Products
+
+
+- (void)addCompanyWithName:(NSString *)name andLogo:(NSString *)logo andSymbol:(NSString *)symbol
 {
-    char *error = NULL;
+    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Company" inManagedObjectContext:self.managedObjectContext];
+    Company *company = (Company *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    company.company_name = name;
+    company.company_logo = logo;
+    company.company_symbol = symbol;
+    company.index = @([self.companyList count]);
     
-    if ( (sqlite3_open( [[self databaseDocumentPath] UTF8String], &database)) == SQLITE_OK) {
-        
-        NSString *sqlStatement = [NSString stringWithFormat:
-                                  @"insert into Product (product_name, product_logo, product_url, product_id, company_id) values('%s','%s','%s',%d,%d)",
-                                  [product.name UTF8String],
-                                  [product.logo UTF8String],
-                                  [product.url UTF8String],
-                                  (int)product.product_ID,
-                                  (int)product.company_ID];
-        
-        if (sqlite3_exec(database, [sqlStatement UTF8String], NULL, NULL, &error) == SQLITE_OK) {
-            NSLog(@"Product added to DB");
-//            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"Add Product Complete" message:@"Product added to DB" delegate:self cancelButtonTitle:@"Close" otherButtonTitles:nil];
-//            [alert show];
-        }
-        sqlite3_close(database);
-        
-    } else {
-        NSLog(@"Error: %s", error);
-    }
+    [self.companyList addObject:company];
+    [self saveContext];
+}
+
+- (void)addProductToCompany:(Company *)company andName:(NSString *)name andLogo:(NSString *)logo andUrl:(NSString *)url;
+{
+    NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Product" inManagedObjectContext:self.managedObjectContext];
+    Product *product = (Product *)[[NSManagedObject alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:self.managedObjectContext];
+    product.product_name = name;
+    product.product_logo = logo;
+    product.product_url = url;
+    product.index = @([company.products count]);
+    
+    company.products = [company.products setByAddingObject:product];
+    
+    [self saveContext];
+
+}
+
+- (void)removeProduct:(Product *)product fromCompany:(Company *)company
+{
+    company.products = [company.products objectsPassingTest:^BOOL(Product * _Nonnull obj, BOOL * _Nonnull stop) {
+        return obj != product;
+    }];
+    
+    [self saveContext];
+
+}
+
+- (void)removeCompany:(Company *)company
+{
+    [self.companyList removeObject:company];
+    [self.managedObjectContext deleteObject:company];
+    
+    [self saveContext];
+
 }
 
 - (void)dealloc
 {
-    [super dealloc];
+    
     [self.companyList release];
+    [self.products release];
     [self.appleProduct release];
     [self.samsungProduct release];
     [self.googleProduct release];
     [self.nokiaProduct release];
+    [super dealloc];
+  
+}
+
+#pragma mark - Core Data stack
+
+@synthesize managedObjectContext = _managedObjectContext;
+@synthesize managedObjectModel = _managedObjectModel;
+@synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
+
+- (NSURL *)applicationDocumentsDirectory {
+    // The directory the application uses to store the Core Data store file. This code uses a directory named "com.benjamin.coredatatest" in the application's documents directory.
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
+
+- (NSManagedObjectModel *)managedObjectModel {
+    // The managed object model for the application. It is a fatal error for the application not to be able to find and load its model.
+    if (_managedObjectModel != nil) {
+        return _managedObjectModel;
+    }
+    
+    
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"Model" withExtension:@"momd"];
+    _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
+    return _managedObjectModel;
+}
+
+- (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
+    // The persistent store coordinator for the application. This implementation creates and returns a coordinator, having added the store for the application to it.
+    if (_persistentStoreCoordinator != nil) {
+        return _persistentStoreCoordinator;
+    }
+    
+    // Create the coordinator and store
+    
+    _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"coredatatest.sqlite"];
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[storeURL path]]) {
+        self.doesDatabaseExist = YES;
+        NSLog(@"Database does exist!");
+    } else {
+        self.doesDatabaseExist = NO;
+        NSLog(@"Database does not exist!");
+    }
+    
+    NSError *error = nil;
+    NSString *failureReason = @"There was an error creating or loading the application's saved data.";
+    if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
+        // Report any error we got.
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        dict[NSLocalizedDescriptionKey] = @"Failed to initialize the application's saved data";
+        dict[NSLocalizedFailureReasonErrorKey] = failureReason;
+        dict[NSUnderlyingErrorKey] = error;
+        error = [NSError errorWithDomain:@"YOUR_ERROR_DOMAIN" code:9999 userInfo:dict];
+        // Replace this with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    
+    return _persistentStoreCoordinator;
+}
+
+
+- (NSManagedObjectContext *)managedObjectContext {
+    // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.)
+    if (_managedObjectContext != nil) {
+        return _managedObjectContext;
+    }
+    
+    NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
+    if (!coordinator) {
+        return nil;
+    }
+    _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    [_managedObjectContext setPersistentStoreCoordinator:coordinator];
+    return _managedObjectContext;
+}
+
+#pragma mark - Core Data Saving support
+
+- (void)saveContext {
+    NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
+    if (managedObjectContext != nil) {
+        NSError *error = nil;
+        if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            abort();
+        }
+    }
 }
 
 @end
